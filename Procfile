@@ -1,0 +1,1 @@
+web: python camzy_server.py
