@@ -5,18 +5,26 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         video_id = self.path.strip("/")
         
-        result = subprocess.run(
-            [
-                "yt-dlp",
-                "-g",
-                "--format", "best[ext=mp4]/best",
-                "--extractor-args", "youtube:player_client=android",
-                "--no-check-certificate",
-                "https://www.youtube.com/watch?v=" + video_id
-            ],
-            capture_output=True, text=True, timeout=30
-        )
-        url = result.stdout.strip().split("\n")[0]
+        # Try different clients
+        clients = ["android", "tv_embedded", "ios", "web"]
+        url = ""
+        
+        for client in clients:
+            result = subprocess.run(
+                [
+                    "yt-dlp",
+                    "-g",
+                    "--format", "best[ext=mp4]/best",
+                    "--extractor-args", f"youtube:player_client={client}",
+                    "--no-check-certificate",
+                    "https://www.youtube.com/watch?v=" + video_id
+                ],
+                capture_output=True, text=True, timeout=30
+            )
+            url = result.stdout.strip().split("\n")[0]
+            if url:
+                print(f"Success with client: {client}")
+                break
         
         self.send_response(200)
         self.send_header("Content-type", "application/json")
