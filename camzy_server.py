@@ -7,7 +7,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         video_id = self.path.strip("/")
         
-        clients = ["android", "tv_embedded", "ios", "web"]
+        clients = ["tv_embedded", "android"]
         url = ""
         
         for client in clients:
@@ -20,7 +20,7 @@ class Handler(BaseHTTPRequestHandler):
                     "--no-check-certificate",
                     "https://www.youtube.com/watch?v=" + video_id
                 ],
-                capture_output=True, text=True, timeout=30
+                capture_output=True, text=True, timeout=15
             )
             print(f"stderr: {result.stderr}")
             url = result.stdout.strip().split("\n")[0]
