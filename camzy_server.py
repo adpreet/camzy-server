@@ -28,6 +28,7 @@ class Handler(BaseHTTPRequestHandler):
                 ],
                 capture_output=True, text=True, timeout=30
             )
+            print(f"stderr: {result.stderr}")
             url = result.stdout.strip().split("\n")[0]
             if url:
                 print(f"Success with client: {client}")
@@ -40,7 +41,7 @@ class Handler(BaseHTTPRequestHandler):
         print(f"Served: {video_id} -> {url[:80] if url else 'EMPTY'}")
     
     def log_message(self, format, *args):
-        pass
+    print(format % args)
 
 port = int(os.environ.get("PORT", 8888))
 print(f"Starting server on port {port}")
