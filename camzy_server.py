@@ -1,3 +1,10 @@
+import subprocess
+subprocess.run(["pip", "install", "--upgrade", "yt-dlp"], capture_output=True)
+
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json, os
+# rest of your code...
+
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import subprocess, json, os
 
