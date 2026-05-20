@@ -6,6 +6,8 @@ import json, os
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         video_id = self.path.strip("/")
+        version = subprocess.run(["yt-dlp", "--version"], capture_output=True, text=True, timeout=5)
+        print(f"yt-dlp version: {version.stdout.strip()}")
         
         clients = ["tv_embedded", "android"]
         url = ""
