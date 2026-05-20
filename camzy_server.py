@@ -1,18 +1,12 @@
 import subprocess
 subprocess.run(["pip", "install", "--upgrade", "yt-dlp"], capture_output=True)
-
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json, os
-# rest of your code...
-
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import subprocess, json, os
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         video_id = self.path.strip("/")
         
-        # Try different clients
         clients = ["android", "tv_embedded", "ios", "web"]
         url = ""
         
@@ -41,7 +35,7 @@ class Handler(BaseHTTPRequestHandler):
         print(f"Served: {video_id} -> {url[:80] if url else 'EMPTY'}")
     
     def log_message(self, format, *args):
-    print(format % args)
+        print(format % args)
 
 port = int(os.environ.get("PORT", 8888))
 print(f"Starting server on port {port}")
