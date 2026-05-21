@@ -16,6 +16,7 @@ class Handler(BaseHTTPRequestHandler):
                     "-g",
                     "--format", "best[ext=mp4]/best",
                     "--extractor-args", f"youtube:player_client={client}",
+"--cookies", "cookies.txt",
                     "--no-check-certificate",
                     "https://www.youtube.com/watch?v=" + video_id
                 ],
