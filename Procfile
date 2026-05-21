@@ -1,1 +1,1 @@
-web: curl -fsSL https://deno.land/install.sh | sh && python camzy_server.py
+web: python camzy_server.py
