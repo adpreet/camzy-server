@@ -10,18 +10,18 @@ class Handler(BaseHTTPRequestHandler):
         url = ""
         
         for client in clients:
-            result = subprocess.run(
-                [
-                    "yt-dlp",
-                    "-g",
-                    "--format", "best[ext=mp4]/best",
-                    "--extractor-args", f"youtube:player_client={client}",
-"--cookies", "cookies.txt",
-                    "--no-check-certificate",
-                    "https://www.youtube.com/watch?v=" + video_id
-                ],
-                capture_output=True, text=True, timeout=15
-            )
+result = subprocess.run(
+    [
+        "yt-dlp",
+        "-g",
+        "--format", "best[ext=mp4]/best",
+        "--extractor-args", f"youtube:player_client={client}",
+        "--cookies", "cookies.txt",
+        "--no-check-certificate",
+        "https://www.youtube.com/watch?v=" + video_id
+    ],
+    capture_output=True, text=True, timeout=15
+)
             print(f"stderr: {result.stderr}")
             url = result.stdout.strip().split("\n")[0]
             if url:
