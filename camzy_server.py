@@ -293,11 +293,11 @@ class Handler(BaseHTTPRequestHandler):
     print(f"returncode: {result.returncode}")
     print(f"stdout: {result.stdout[:200]}")
     print(f"stderr: {result.stderr[:200]}")
-    url = result.stdout.strip().split("\n")[0]
-    if url:
-        print(f"Success with client: {client}")
-        cache[video_id] = (url, time.time())
-        break
+            url = result.stdout.strip().split("\n")[0]
+            if url:
+                print(f"Success with client: {client}")
+                cache[video_id] = (url, time.time())
+                break
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
