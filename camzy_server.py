@@ -278,17 +278,17 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Cache hit: {video_id}")
                 return
 
-clients = ["ios", "web", "android"]
-url = ""
-for client in clients:
-    result = subprocess.run(
-        ["yt-dlp", "-g", "--format", "best[ext=mp4]/best",
-         "--extractor-args", f"youtube:player_client={client}",
-         "--no-check-certificate",
-         "--no-playlist",
-         "https://www.youtube.com/watch?v=" + video_id],
-        capture_output=True, text=True, timeout=30
-    )
+        clients = ["ios", "web", "android"]
+        url = ""
+        for client in clients:
+            result = subprocess.run(
+                ["yt-dlp", "-g", "--format", "best[ext=mp4]/best",
+                 "--extractor-args", f"youtube:player_client={client}",
+                 "--no-check-certificate",
+                 "--no-playlist",
+                 "https://www.youtube.com/watch?v=" + video_id],
+                capture_output=True, text=True, timeout=30
+            )
     print(f"client: {client}")
     print(f"returncode: {result.returncode}")
     print(f"stdout: {result.stdout[:200]}")
