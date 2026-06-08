@@ -278,25 +278,26 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Cache hit: {video_id}")
                 return
 
-        clients = ["tv_embedded", "android"]
-        url = ""
-        for client in clients:
-            result = subprocess.run(
-                ["yt-dlp", "-g", "--format", "best[ext=mp4]/best",
-                 "--extractor-args", f"youtube:player_client={client}",
-                 "--no-check-certificate",
-                 "https://www.youtube.com/watch?v=" + video_id],
-                capture_output=True, text=True, timeout=15
-            )
-            print(f"client: {client}")
-            print(f"returncode: {result.returncode}")
-            print(f"stdout: {result.stdout[:200]}")
-            print(f"stderr: {result.stderr[:200]}")
-            url = result.stdout.strip().split("\n")[0]
-            if url:
-                print(f"Success with client: {client}")
-                cache[video_id] = (url, time.time())
-                break
+clients = ["ios", "web", "android"]
+url = ""
+for client in clients:
+    result = subprocess.run(
+        ["yt-dlp", "-g", "--format", "best[ext=mp4]/best",
+         "--extractor-args", f"youtube:player_client={client}",
+         "--no-check-certificate",
+         "--no-playlist",
+         "https://www.youtube.com/watch?v=" + video_id],
+        capture_output=True, text=True, timeout=30
+    )
+    print(f"client: {client}")
+    print(f"returncode: {result.returncode}")
+    print(f"stdout: {result.stdout[:200]}")
+    print(f"stderr: {result.stderr[:200]}")
+    url = result.stdout.strip().split("\n")[0]
+    if url:
+        print(f"Success with client: {client}")
+        cache[video_id] = (url, time.time())
+        break
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
