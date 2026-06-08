@@ -287,12 +287,12 @@ class Handler(BaseHTTPRequestHandler):
                  "--no-check-certificate",
                  "--no-playlist",
                  "https://www.youtube.com/watch?v=" + video_id],
-                capture_output=True, text=True, timeout=30
+capture_output=True, text=True, timeout=30
             )
-    print(f"client: {client}")
-    print(f"returncode: {result.returncode}")
-    print(f"stdout: {result.stdout[:200]}")
-    print(f"stderr: {result.stderr[:200]}")
+            print(f"client: {client}")
+            print(f"returncode: {result.returncode}")
+            print(f"stdout: {result.stdout[:200]}")
+            print(f"stderr: {result.stderr[:200]}")
             url = result.stdout.strip().split("\n")[0]
             if url:
                 print(f"Success with client: {client}")
