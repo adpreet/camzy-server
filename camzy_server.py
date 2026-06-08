@@ -21,7 +21,7 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Cache hit: {video_id}")
                 return
 
-        clients = ["tv_embedded", "android"]
+        clients = ["android", "web"]
         url = ""
         
         for client in clients:
