@@ -21,7 +21,7 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Cache hit: {video_id}")
                 return
 
-        clients = ["android", "web"]
+        clients = ["web"]
         url = ""
         
         for client in clients:
@@ -32,6 +32,7 @@ class Handler(BaseHTTPRequestHandler):
                     "--format", "best[ext=mp4]/best",
                     "--extractor-args", f"youtube:player_client={client}",
                     "--no-check-certificate",
+                    "--cookies", "/app/cookies.txt",
                     "https://www.youtube.com/watch?v=" + video_id
                 ],
                 capture_output=True, text=True, timeout=15
