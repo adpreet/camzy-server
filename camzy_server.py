@@ -278,7 +278,7 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Cache hit: {video_id}")
                 return
 
-        clients = ["ios", "web", "android"]
+        clients = ["web", "tv_embedded"]
         url = ""
         for client in clients:
             result = subprocess.run(
@@ -286,7 +286,6 @@ class Handler(BaseHTTPRequestHandler):
                  "--extractor-args", f"youtube:player_client={client}",
                  "--no-check-certificate",
                  "--no-playlist",
-                 "--cookies", "/app/cookies.txt",
                  "https://www.youtube.com/watch?v=" + video_id],
 capture_output=True, text=True, timeout=30
             )
