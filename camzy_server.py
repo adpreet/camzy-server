@@ -246,7 +246,7 @@ ADMIN_HTML = """
 """
 
 class Handler(BaseHTTPRequestHandler):
-def do_GET(self):
+    def do_GET(self):
         result2 = subprocess.run(["yt-dlp", "--version"], capture_output=True, text=True)
         print(f"yt-dlp version: {result2.stdout.strip()}")
         path = self.path.strip("/")
