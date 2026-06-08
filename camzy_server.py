@@ -288,6 +288,9 @@ class Handler(BaseHTTPRequestHandler):
                  "https://www.youtube.com/watch?v=" + video_id],
                 capture_output=True, text=True, timeout=30
             )
+            print(f"returncode: {result.returncode}")
+            print(f"stdout: {result.stdout}")
+            print(f"stderr: {result.stderr}")
             url = result.stdout.strip().split("\n")[0]
             if url:
                 print(f"Success with client: {client}")
