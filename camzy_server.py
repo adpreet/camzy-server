@@ -7,11 +7,11 @@ cache = {}
 CACHE_DURATION = 3600  # 1 hour
 
 class Handler(BaseHTTPRequestHandler):
-def do_GET(self):
-    import shutil
-    print(f"deno path: {shutil.which('deno')}")
-    print(f"node path: {shutil.which('node')}")
-    video_id = self.path.strip("/")
+    def do_GET(self):
+        import shutil
+        print(f"deno path: {shutil.which('deno')}")
+        print(f"node path: {shutil.which('node')}")
+        video_id = self.path.strip("/")
         
         # Return cached URL if still valid
         if video_id in cache:
