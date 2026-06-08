@@ -286,6 +286,7 @@ class Handler(BaseHTTPRequestHandler):
                  "--extractor-args", f"youtube:player_client={client}",
                  "--no-check-certificate",
                  "--no-playlist",
+                 "--cookies", "/app/cookies.txt",
                  "https://www.youtube.com/watch?v=" + video_id],
 capture_output=True, text=True, timeout=30
             )
