@@ -114,6 +114,7 @@ ADMIN_HTML = """
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-size: 14px; color: #aaa; }
         input, select { width: 100%; padding: 8px; background: #0d1b2a; border: 1px solid #333; color: white; border-radius: 4px; font-size: 14px; }
+        input::placeholder, select::placeholder { color: #555; }
         .submit-btn { background: #4a9eff; border: none; color: white; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
         .login-form { max-width: 300px; margin: 100px auto; background: #1a2a3a; padding: 30px; border-radius: 8px; }
         .login-form h2 { color: #4a9eff; margin-bottom: 20px; text-align: center; }
@@ -188,13 +189,13 @@ ADMIN_HTML = """
                 </div>
                 <div class="add-form">
                     <h2>Add New Cam</h2>
-                    <div class="form-group"><label>Name</label><input id="f-name" placeholder="Tokyo Shibuya" /></div>
-                    <div class="form-group"><label>Location</label><input id="f-location" placeholder="Tokyo, Japan" /></div>
-                    <div class="form-group"><label>YouTube Video ID</label><input id="f-videoId" placeholder="dQw4w9WgXcQ" /></div>
-                    <div class="form-group"><label>Direct URL (optional)</label><input id="f-directUrl" placeholder="https://..." /></div>
-                    <div class="form-group"><label>Timezone</label><input id="f-timezone" placeholder="America/New_York" /></div>
-                    <div class="form-group"><label>Latitude</label><input id="f-lat" placeholder="40.7128" /></div>
-                    <div class="form-group"><label>Longitude</label><input id="f-lon" placeholder="-74.0060" /></div>
+                    <div class="form-group"><label>Name</label><input id="f-name" placeholder="Enter cam name" /></div>
+                    <div class="form-group"><label>Location</label><input id="f-location" placeholder="Enter location" /></div>
+                    <div class="form-group"><label>YouTube Video ID</label><input id="f-videoId" placeholder="e.g. ABC123xyz" /></div>
+                    <div class="form-group"><label>Direct URL (optional)</label><input id="f-directUrl" placeholder="https://stream.example.com/stream.m3u8" /></div>
+                    <div class="form-group"><label>Timezone</label><input id="f-timezone" placeholder="e.g. America/New_York" /></div>
+                    <div class="form-group"><label>Latitude</label><input id="f-lat" placeholder="e.g. 40.7128" /></div>
+                    <div class="form-group"><label>Longitude</label><input id="f-lon" placeholder="e.g. -74.0060" /></div>
                     <div class="form-group">
                         <label>Category</label>
                         <select id="f-category">
