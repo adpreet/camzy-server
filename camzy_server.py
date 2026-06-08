@@ -2,8 +2,6 @@ import subprocess
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json, os, time
 
-subprocess.run(["pip", "install", "--upgrade", "yt-dlp"], capture_output=True)
-
 # Cache: {video_id: (url, timestamp)}
 cache = {}
 CACHE_DURATION = 3600  # 1 hour
