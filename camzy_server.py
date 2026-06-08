@@ -278,7 +278,7 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"Cache hit: {video_id}")
                 return
 
-        clients = ["mweb", "web", "tv_embedded"]
+        clients = ["tv_embedded", "android"]
         url = ""
         for client in clients:
             result = subprocess.run(
