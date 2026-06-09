@@ -1,1 +1,3 @@
 yt-dlp==2024.12.13
+yt-dlp-get-pot
+bgutil-ytdlp-pot-provider
