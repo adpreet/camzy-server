@@ -107,6 +107,7 @@ ADMIN_HTML = """
         .cam-location { color: #4a9eff; font-size: 12px; }
         .cam-category { color: #888; font-size: 12px; }
         .delete-btn { background: #ff4444; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .edit-btn { background: #4a9eff; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
         .add-form { background: #1a2a3a; padding: 20px; border-radius: 8px; }
         .add-form h2 { margin-bottom: 15px; color: #4a9eff; }
         .form-group { margin-bottom: 12px; }
@@ -126,6 +127,7 @@ ADMIN_HTML = """
     <script>
         let authed = false;
         let cams = [];
+        let editingId = null;
 
         function render() {
             if (!authed) {
@@ -176,12 +178,15 @@ ADMIN_HTML = """
                     <h2 style="margin-bottom:12px;">Cams (${cams.length})</h2>
                     ${cams.map(cam => `
                         <div class="cam-item">
-                            <div>
+                            <div style="flex:1">
                                 <div class="cam-name">${cam.name}</div>
                                 <div class="cam-location">${cam.location}</div>
                                 <div class="cam-category">${cam.category}</div>
                             </div>
-                            <button class="delete-btn" onclick="deleteCam('${cam.id}')">Delete</button>
+                            <div style="display:flex;gap:8px;">
+                                <button class="edit-btn" onclick="editCam('${cam.id}')">Edit</button>
+                                <button class="delete-btn" onclick="deleteCam('${cam.id}')">Delete</button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -205,7 +210,75 @@ ADMIN_HTML = """
                     </div>
                     <div class="form-group"><label>Thumbnail URL (optional)</label><input id="f-thumbnail" placeholder="https://..." /></div>
                     <button class="submit-btn" onclick="addCam()">Add Cam</button>
+                </div>
+                <div id="edit-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:100;overflow-y:auto;padding:20px;">
+                    <div style="background:#1a2a3a;border-radius:8px;padding:20px;max-width:500px;margin:0 auto;">
+                        <h2 style="color:#4a9eff;margin-bottom:15px;">Edit Cam</h2>
+                        <div class="form-group"><label>Name</label><input id="e-name" /></div>
+                        <div class="form-group"><label>Location</label><input id="e-location" /></div>
+                        <div class="form-group"><label>YouTube Video ID</label><input id="e-videoId" /></div>
+                        <div class="form-group"><label>Direct URL (optional)</label><input id="e-directUrl" /></div>
+                        <div class="form-group"><label>Timezone</label><input id="e-timezone" /></div>
+                        <div class="form-group"><label>Latitude</label><input id="e-lat" /></div>
+                        <div class="form-group"><label>Longitude</label><input id="e-lon" /></div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="e-category">
+                                <option>USA</option>
+                                <option>Europe</option>
+                                <option>Caribbean</option>
+                                <option>Asia Pacific</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" /></div>
+                        <div style="display:flex;gap:8px;margin-top:12px;">
+                            <button class="submit-btn" onclick="saveCam()">Save</button>
+                            <button class="submit-btn" style="background:#555;" onclick="closeEdit()">Cancel</button>
+                        </div>
+                    </div>
                 </div>`;
+        }
+
+        function editCam(id) {
+            const cam = cams.find(c => c.id === id);
+            if (!cam) return;
+            editingId = id;
+            document.getElementById('e-name').value = cam.name;
+            document.getElementById('e-location').value = cam.location;
+            document.getElementById('e-videoId').value = cam.videoId;
+            document.getElementById('e-directUrl').value = cam.directUrl || '';
+            document.getElementById('e-timezone').value = cam.timezone;
+            document.getElementById('e-lat').value = cam.lat;
+            document.getElementById('e-lon').value = cam.lon;
+            document.getElementById('e-category').value = cam.category;
+            document.getElementById('e-thumbnail').value = cam.thumbnailOverride || '';
+            document.getElementById('edit-modal').style.display = 'block';
+        }
+
+        function closeEdit() {
+            document.getElementById('edit-modal').style.display = 'none';
+            editingId = null;
+        }
+
+        function saveCam() {
+            const cam = {
+                name: document.getElementById('e-name').value,
+                location: document.getElementById('e-location').value,
+                videoId: document.getElementById('e-videoId').value,
+                directUrl: document.getElementById('e-directUrl').value,
+                timezone: document.getElementById('e-timezone').value,
+                lat: parseFloat(document.getElementById('e-lat').value) || 0,
+                lon: parseFloat(document.getElementById('e-lon').value) || 0,
+                category: document.getElementById('e-category').value,
+                thumbnailOverride: document.getElementById('e-thumbnail').value
+            };
+            fetch('/cams/' + editingId, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json', 'X-Password': window._pwd},
+                body: JSON.stringify(cam)
+            }).then(r => r.json()).then(d => {
+                if (d.ok) { closeEdit(); loadCams(); }
+            });
         }
 
         function deleteCam(id) {
@@ -331,6 +404,29 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"ok": True}).encode())
             return
 
+    def do_PUT(self):
+        path = self.path.strip("/")
+        if path.startswith("cams/"):
+            if self.headers.get("X-Password") != ADMIN_PASSWORD:
+                self.send_response(403)
+                self.end_headers()
+                return
+            cam_id = path.split("/")[1]
+            length = int(self.headers.get('Content-Length', 0))
+            updated = json.loads(self.rfile.read(length))
+            cams = load_cams()
+            for i, cam in enumerate(cams):
+                if cam["id"] == cam_id:
+                    updated["id"] = cam_id
+                    cams[i] = updated
+                    break
+            save_cams(cams)
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": True}).encode())
+            return
+
     def do_DELETE(self):
         path = self.path.strip("/")
         if path.startswith("cams/"):
@@ -351,7 +447,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Password")
         self.end_headers()
 
