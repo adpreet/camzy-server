@@ -131,7 +131,7 @@ ADMIN_HTML = """
             if (!authed) {
                 document.getElementById('app').innerHTML = `
                     <div class="login-form">
-                        <h2>🎥 Camzy Admin</h2>
+                        <h2>Camzy Admin</h2>
                         <div class="form-group">
                             <label>Password</label>
                             <input type="password" id="pwd" placeholder="Enter password" />
@@ -170,7 +170,7 @@ ADMIN_HTML = """
 
         function renderAdmin() {
             document.getElementById('app').innerHTML = `
-                <h1>🎥 Camzy Admin</h1>
+                <h1>Camzy Admin</h1>
                 <div id="msg"></div>
                 <div class="cam-list">
                     <h2 style="margin-bottom:12px;">Cams (${cams.length})</h2>
