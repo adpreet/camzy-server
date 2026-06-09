@@ -115,11 +115,14 @@ ADMIN_HTML = """
         input, select { width: 100%; padding: 8px; background: #0d1b2a; border: 1px solid #333; color: white; border-radius: 4px; font-size: 14px; }
         input::placeholder { color: #555; }
         .submit-btn { background: #4a9eff; border: none; color: white; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
+        .cancel-btn { background: #555; border: none; color: white; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
         .login-form { max-width: 300px; margin: 100px auto; background: #1a2a3a; padding: 30px; border-radius: 8px; }
         .login-form h2 { color: #4a9eff; margin-bottom: 20px; text-align: center; }
         .msg { padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; }
         .success { background: #1a4a1a; color: #4aff4a; }
         .error { background: #4a1a1a; color: #ff4a4a; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
     </style>
 </head>
 <body>
@@ -213,7 +216,10 @@ ADMIN_HTML = """
                 </div>
                 <div id="edit-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:100;overflow-y:auto;padding:20px;">
                     <div style="background:#1a2a3a;border-radius:8px;padding:20px;max-width:500px;margin:0 auto;">
-                        <h2 style="color:#4a9eff;margin-bottom:15px;">Edit Cam</h2>
+                        <div class="modal-header">
+                            <h2 style="color:#4a9eff;">Edit Cam</h2>
+                            <button class="close-btn" onclick="closeEdit()">X</button>
+                        </div>
                         <div class="form-group"><label>Name</label><input id="e-name" /></div>
                         <div class="form-group"><label>Location</label><input id="e-location" /></div>
                         <div class="form-group"><label>YouTube Video ID</label><input id="e-videoId" /></div>
@@ -231,10 +237,8 @@ ADMIN_HTML = """
                             </select>
                         </div>
                         <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" /></div>
-                        <div style="display:flex;gap:8px;margin-top:12px;">
-                            <button class="submit-btn" onclick="saveCam()">Save</button>
-                            <button class="submit-btn" style="background:#555;" onclick="closeEdit()">Cancel</button>
-                        </div>
+                        <button class="submit-btn" onclick="saveCam()">Save</button>
+                        <button class="cancel-btn" onclick="closeEdit()">Cancel</button>
                     </div>
                 </div>`;
         }
