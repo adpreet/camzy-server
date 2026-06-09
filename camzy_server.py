@@ -2,9 +2,8 @@ import subprocess
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json, os, time
 
-# Cache: {video_id: (url, timestamp)}
 cache = {}
-CACHE_DURATION = 3600  # 1 hour
+CACHE_DURATION = 3600
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "camzy123")
 CAMS_FILE = "cams.json"
@@ -87,7 +86,6 @@ def get_default_cams():
     {"id": "64", "name": "Harbor Cam", "location": "New York City, New York", "videoId": "", "directUrl": "https://cdn77.ptztv.live/eUBVKlrSqtUjJe_sM7wdiw==,1780901263/cdnorigin/nyhwmux.stream/chunklist_DVR.m3u8", "timezone": "America/New_York", "lat": 40.7128, "lon": -74.006, "category": "USA", "thumbnailOverride": "https://i.imgur.com/rXoM42Q.png"}
 ]
 
-# Initialize cams file if it doesn't exist
 if not os.path.exists(CAMS_FILE):
     save_cams(get_default_cams())
 
@@ -99,8 +97,10 @@ ADMIN_HTML = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; padding: 20px; }
+        body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; }
+        .page { padding: 20px; min-height: 100vh; }
         h1 { color: #4a9eff; margin-bottom: 20px; }
+        h2 { color: #4a9eff; margin-bottom: 15px; }
         .cam-list { margin-bottom: 30px; }
         .cam-item { background: #1a2a3a; padding: 12px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
         .cam-name { font-weight: bold; }
@@ -108,21 +108,18 @@ ADMIN_HTML = """
         .cam-category { color: #888; font-size: 12px; }
         .delete-btn { background: #ff4444; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
         .edit-btn { background: #4a9eff; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        .add-form { background: #1a2a3a; padding: 20px; border-radius: 8px; }
-        .add-form h2 { margin-bottom: 15px; color: #4a9eff; }
+        .add-form { background: #1a2a3a; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-size: 14px; color: #aaa; }
-        input, select { width: 100%; padding: 8px; background: #0d1b2a; border: 1px solid #333; color: white; border-radius: 4px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; background: #0d1b2a; border: 1px solid #333; color: white; border-radius: 4px; font-size: 16px; }
         input::placeholder { color: #555; }
-        .submit-btn { background: #4a9eff; border: none; color: white; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
-        .cancel-btn { background: #555; border: none; color: white; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
+        .btn { border: none; color: white; padding: 14px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
+        .btn-blue { background: #4a9eff; }
+        .btn-grey { background: #555; }
+        .btn-back { background: #1a2a3a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; width: auto; padding: 10px 16px; }
         .login-form { max-width: 300px; margin: 100px auto; background: #1a2a3a; padding: 30px; border-radius: 8px; }
-        .login-form h2 { color: #4a9eff; margin-bottom: 20px; text-align: center; }
         .msg { padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; }
-        .success { background: #1a4a1a; color: #4aff4a; }
         .error { background: #4a1a1a; color: #ff4a4a; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
     </style>
 </head>
 <body>
@@ -131,22 +128,26 @@ ADMIN_HTML = """
         let authed = false;
         let cams = [];
         let editingId = null;
+        let view = 'login';
 
         function render() {
-            if (!authed) {
-                document.getElementById('app').innerHTML = `
-                    <div class="login-form">
-                        <h2>Camzy Admin</h2>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" id="pwd" placeholder="Enter password" />
-                        </div>
-                        <button class="submit-btn" onclick="login()">Login</button>
-                        <div id="login-msg"></div>
-                    </div>`;
-            } else {
-                renderAdmin();
-            }
+            if (view === 'login') renderLogin();
+            else if (view === 'list') renderList();
+            else if (view === 'edit') renderEdit();
+            else if (view === 'add') renderAdd();
+        }
+
+        function renderLogin() {
+            document.getElementById('app').innerHTML = `
+                <div class="login-form">
+                    <h2>Camzy Admin</h2>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="pwd" placeholder="Enter password" />
+                    </div>
+                    <button class="btn btn-blue" onclick="login()">Login</button>
+                    <div id="login-msg"></div>
+                </div>`;
         }
 
         function login() {
@@ -169,101 +170,111 @@ ADMIN_HTML = """
         function loadCams() {
             fetch('/cams').then(r => r.json()).then(data => {
                 cams = data;
-                renderAdmin();
+                view = 'list';
+                render();
             });
         }
 
-        function renderAdmin() {
+        function renderList() {
             document.getElementById('app').innerHTML = `
-                <h1>Camzy Admin</h1>
-                <div id="msg"></div>
-                <div class="cam-list">
-                    <h2 style="margin-bottom:12px;">Cams (${cams.length})</h2>
-                    ${cams.map(cam => `
-                        <div class="cam-item">
-                            <div style="flex:1">
-                                <div class="cam-name">${cam.name}</div>
-                                <div class="cam-location">${cam.location}</div>
-                                <div class="cam-category">${cam.category}</div>
+                <div class="page">
+                    <h1>Camzy Admin</h1>
+                    <div class="cam-list">
+                        <h2>Cams (${cams.length})</h2>
+                        ${cams.map(cam => `
+                            <div class="cam-item">
+                                <div style="flex:1">
+                                    <div class="cam-name">${cam.name}</div>
+                                    <div class="cam-location">${cam.location}</div>
+                                    <div class="cam-category">${cam.category}</div>
+                                </div>
+                                <div style="display:flex;gap:8px;">
+                                    <button class="edit-btn" onclick="showEdit('${cam.id}')">Edit</button>
+                                    <button class="delete-btn" onclick="deleteCam('${cam.id}')">Delete</button>
+                                </div>
                             </div>
-                            <div style="display:flex;gap:8px;">
-                                <button class="edit-btn" onclick="editCam('${cam.id}')">Edit</button>
-                                <button class="delete-btn" onclick="deleteCam('${cam.id}')">Delete</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="add-form">
-                    <h2>Add New Cam</h2>
-                    <div class="form-group"><label>Name</label><input id="f-name" placeholder="Enter cam name" /></div>
-                    <div class="form-group"><label>Location</label><input id="f-location" placeholder="Enter location" /></div>
-                    <div class="form-group"><label>YouTube Video ID</label><input id="f-videoId" placeholder="e.g. ABC123xyz" /></div>
-                    <div class="form-group"><label>Direct URL (optional)</label><input id="f-directUrl" placeholder="https://stream.example.com/stream.m3u8" /></div>
-                    <div class="form-group"><label>Timezone</label><input id="f-timezone" placeholder="e.g. America/New_York" /></div>
-                    <div class="form-group"><label>Latitude</label><input id="f-lat" placeholder="e.g. 40.7128" /></div>
-                    <div class="form-group"><label>Longitude</label><input id="f-lon" placeholder="e.g. -74.0060" /></div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="f-category">
-                            <option>USA</option>
-                            <option>Europe</option>
-                            <option>Caribbean</option>
-                            <option>Asia Pacific</option>
-                        </select>
+                        `).join('')}
                     </div>
-                    <div class="form-group"><label>Thumbnail URL (optional)</label><input id="f-thumbnail" placeholder="https://..." /></div>
-                    <button class="submit-btn" onclick="addCam()">Add Cam</button>
-                </div>
-                <div id="edit-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:100;overflow-y:auto;padding:20px;">
-                    <div style="background:#1a2a3a;border-radius:8px;padding:20px;max-width:500px;margin:0 auto;">
-                        <div class="modal-header">
-                            <h2 style="color:#4a9eff;">Edit Cam</h2>
-                            <button class="close-btn" onclick="closeEdit()">X</button>
-                        </div>
-                        <div class="form-group"><label>Name</label><input id="e-name" /></div>
-                        <div class="form-group"><label>Location</label><input id="e-location" /></div>
-                        <div class="form-group"><label>YouTube Video ID</label><input id="e-videoId" /></div>
-                        <div class="form-group"><label>Direct URL (optional)</label><input id="e-directUrl" /></div>
-                        <div class="form-group"><label>Timezone</label><input id="e-timezone" /></div>
-                        <div class="form-group"><label>Latitude</label><input id="e-lat" /></div>
-                        <div class="form-group"><label>Longitude</label><input id="e-lon" /></div>
+                    <div class="add-form">
+                        <button class="btn btn-blue" onclick="showAdd()">+ Add New Cam</button>
+                    </div>
+                </div>`;
+        }
+
+        function showEdit(id) {
+            editingId = id;
+            view = 'edit';
+            render();
+        }
+
+        function showAdd() {
+            view = 'add';
+            render();
+        }
+
+        function renderEdit() {
+            const cam = cams.find(c => c.id === editingId);
+            document.getElementById('app').innerHTML = `
+                <div class="page">
+                    <button class="btn btn-back" onclick="backToList()">Back</button>
+                    <h2>Edit Cam</h2>
+                    <div class="add-form">
+                        <div class="form-group"><label>Name</label><input id="e-name" value="${cam.name}" /></div>
+                        <div class="form-group"><label>Location</label><input id="e-location" value="${cam.location}" /></div>
+                        <div class="form-group"><label>YouTube Video ID</label><input id="e-videoId" value="${cam.videoId}" /></div>
+                        <div class="form-group"><label>Direct URL (optional)</label><input id="e-directUrl" value="${cam.directUrl || ''}" /></div>
+                        <div class="form-group"><label>Timezone</label><input id="e-timezone" value="${cam.timezone}" /></div>
+                        <div class="form-group"><label>Latitude</label><input id="e-lat" value="${cam.lat}" /></div>
+                        <div class="form-group"><label>Longitude</label><input id="e-lon" value="${cam.lon}" /></div>
                         <div class="form-group">
                             <label>Category</label>
                             <select id="e-category">
+                                <option ${cam.category === 'USA' ? 'selected' : ''}>USA</option>
+                                <option ${cam.category === 'Europe' ? 'selected' : ''}>Europe</option>
+                                <option ${cam.category === 'Caribbean' ? 'selected' : ''}>Caribbean</option>
+                                <option ${cam.category === 'Asia Pacific' ? 'selected' : ''}>Asia Pacific</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" value="${cam.thumbnailOverride || ''}" /></div>
+                        <button class="btn btn-blue" onclick="saveCam()">Save</button>
+                        <button class="btn btn-grey" onclick="backToList()">Cancel</button>
+                    </div>
+                </div>`;
+        }
+
+        function renderAdd() {
+            document.getElementById('app').innerHTML = `
+                <div class="page">
+                    <button class="btn btn-back" onclick="backToList()">Back</button>
+                    <h2>Add New Cam</h2>
+                    <div class="add-form">
+                        <div class="form-group"><label>Name</label><input id="f-name" placeholder="Enter cam name" /></div>
+                        <div class="form-group"><label>Location</label><input id="f-location" placeholder="Enter location" /></div>
+                        <div class="form-group"><label>YouTube Video ID</label><input id="f-videoId" placeholder="e.g. ABC123xyz" /></div>
+                        <div class="form-group"><label>Direct URL (optional)</label><input id="f-directUrl" placeholder="https://..." /></div>
+                        <div class="form-group"><label>Timezone</label><input id="f-timezone" placeholder="e.g. America/New_York" /></div>
+                        <div class="form-group"><label>Latitude</label><input id="f-lat" placeholder="e.g. 40.7128" /></div>
+                        <div class="form-group"><label>Longitude</label><input id="f-lon" placeholder="e.g. -74.0060" /></div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="f-category">
                                 <option>USA</option>
                                 <option>Europe</option>
                                 <option>Caribbean</option>
                                 <option>Asia Pacific</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" /></div>
-                        <button class="submit-btn" onclick="saveCam()">Save</button>
-                        <button class="cancel-btn" onclick="closeEdit()">Cancel</button>
+                        <div class="form-group"><label>Thumbnail URL (optional)</label><input id="f-thumbnail" placeholder="https://..." /></div>
+                        <button class="btn btn-blue" onclick="addCam()">Add Cam</button>
+                        <button class="btn btn-grey" onclick="backToList()">Cancel</button>
                     </div>
                 </div>`;
         }
 
-        function editCam(id) {
-            const cam = cams.find(c => c.id === id);
-            if (!cam) return;
-            editingId = id;
-            document.getElementById('e-name').value = cam.name;
-            document.getElementById('e-location').value = cam.location;
-            document.getElementById('e-videoId').value = cam.videoId;
-            document.getElementById('e-directUrl').value = cam.directUrl || '';
-            document.getElementById('e-timezone').value = cam.timezone;
-            document.getElementById('e-lat').value = cam.lat;
-            document.getElementById('e-lon').value = cam.lon;
-            document.getElementById('e-category').value = cam.category;
-            document.getElementById('e-thumbnail').value = cam.thumbnailOverride || '';
-            document.getElementById('edit-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeEdit() {
-            document.getElementById('edit-modal').style.display = 'none';
-            document.body.style.overflow = '';
+        function backToList() {
             editingId = null;
+            view = 'list';
+            render();
         }
 
         function saveCam() {
@@ -283,7 +294,7 @@ ADMIN_HTML = """
                 headers: {'Content-Type': 'application/json', 'X-Password': window._pwd},
                 body: JSON.stringify(cam)
             }).then(r => r.json()).then(d => {
-                if (d.ok) { closeEdit(); loadCams(); }
+                if (d.ok) { loadCams(); }
             });
         }
 
@@ -344,7 +355,6 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(cams).encode())
             return
 
-        # YouTube stream extraction
         video_id = path
         if video_id in cache:
             url, timestamp = cache[video_id]
