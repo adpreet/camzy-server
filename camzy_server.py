@@ -257,10 +257,12 @@ ADMIN_HTML = """
             document.getElementById('e-category').value = cam.category;
             document.getElementById('e-thumbnail').value = cam.thumbnailOverride || '';
             document.getElementById('edit-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
 
         function closeEdit() {
             document.getElementById('edit-modal').style.display = 'none';
+            document.body.style.overflow = '';
             editingId = null;
         }
 
