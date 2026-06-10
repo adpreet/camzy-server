@@ -207,17 +207,27 @@ ADMIN_HTML = """
                 </div>`;
         }
 
-        function showEdit(id) {
+      function showEdit(id) {
             editingId = id;
             view = 'edit';
             render();
             window.scrollTo(0, 0);
+            requestAnimationFrame(() => {
+                document.body.style.transform = 'scale(1)';
+                document.body.offsetHeight;
+                document.body.style.transform = '';
+            });
         }
 
         function showAdd() {
             view = 'add';
             render();
             window.scrollTo(0, 0);
+            requestAnimationFrame(() => {
+                document.body.style.transform = 'scale(1)';
+                document.body.offsetHeight;
+                document.body.style.transform = '';
+            });
         }
 
         function renderEdit() {
