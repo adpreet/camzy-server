@@ -95,9 +95,10 @@ ADMIN_HTML = """
 <head>
     <title>Camzy Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; }
+        body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; -webkit-overflow-scrolling: touch; }
         .page { padding: 20px; min-height: 100vh; }
         h1 { color: #4a9eff; margin-bottom: 20px; }
         h2 { color: #4a9eff; margin-bottom: 15px; }
