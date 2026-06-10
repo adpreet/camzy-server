@@ -99,7 +99,7 @@ ADMIN_HTML = """
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; cursor: pointer; }
         body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; -webkit-overflow-scrolling: touch; }
-        .page { padding: 20px; min-height: 100vh; }
+        .page{padding:20px;min-height:100vh;min-height:100dvh;}
         h1 { color: #4a9eff; margin-bottom: 20px; }
         h2 { color: #4a9eff; margin-bottom: 15px; }
         .cam-list { margin-bottom: 30px; }
