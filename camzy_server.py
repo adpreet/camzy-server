@@ -331,6 +331,15 @@ ADMIN_HTML = """
                 if (d.ok) { loadCams(); }
             });
         }
+        document.addEventListener('touchend', function(e) {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const onclick = btn.getAttribute('onclick');
+            if (onclick) {
+                e.preventDefault();
+                eval(onclick);
+            }
+        }, false);
 
         render();
     </script>
