@@ -254,6 +254,8 @@ ADMIN_HTML = """
                             </select>
                         </div>
                         <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" value="${cam.thumbnailOverride || ''}" /></div>
+                    </div>
+                    <div class="sticky-buttons">
                         <button class="btn btn-blue" onclick="saveCam()">Save</button>
                         <button class="btn btn-grey" onclick="backToList()">Cancel</button>
                     </div>
@@ -282,8 +284,10 @@ ADMIN_HTML = """
                                 <option>Asia Pacific</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Thumbnail URL (optional)</label><input id="f-thumbnail" placeholder="https://..." /></div>
-                        <button class="btn btn-blue" onclick="addCam()">Add Cam</button>
+                    <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" value="${cam.thumbnailOverride || ''}" /></div>
+                    </div>
+                    <div class="sticky-buttons">
+                        <button class="btn btn-blue" onclick="saveCam()">Save</button>
                         <button class="btn btn-grey" onclick="backToList()">Cancel</button>
                     </div>
                 </div>`;
