@@ -109,6 +109,11 @@ ADMIN_HTML = """
         .cam-category { color: #888; font-size: 12px; }
         .delete-btn { background: #ff4444; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
         .edit-btn { background: #4a9eff; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+
+        button {
+            touch-action: manipulation;
+        }
+
         .add-form { background: #1a2a3a; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-size: 14px; color: #aaa; }
@@ -207,14 +212,12 @@ ADMIN_HTML = """
             view = 'edit';
             render();
             window.scrollTo(0, 0);
-            setTimeout(() => window.scrollBy(0, 1), 0);
         }
 
         function showAdd() {
             view = 'add';
             render();
             window.scrollTo(0, 0);
-            setTimeout(() => window.scrollBy(0, 1), 0);
         }
 
         function renderEdit() {
@@ -333,15 +336,6 @@ ADMIN_HTML = """
                 if (d.ok) { loadCams(); }
             });
         }
-        document.addEventListener('touchend', function(e) {
-            const btn = e.target.closest('button');
-            if (!btn) return;
-            const onclick = btn.getAttribute('onclick');
-            if (onclick) {
-                e.preventDefault();
-                eval(onclick);
-            }
-        }, false);
 
         render();
     </script>
