@@ -205,11 +205,13 @@ ADMIN_HTML = """
             editingId = id;
             view = 'edit';
             render();
+            window.scrollTo(0, 0);
         }
 
         function showAdd() {
             view = 'add';
             render();
+            window.scrollTo(0, 0);
         }
 
         function renderEdit() {
