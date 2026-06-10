@@ -181,6 +181,7 @@ ADMIN_HTML = """
             document.getElementById('app').innerHTML = `
                 <div class="page">
                     <h1>Camzy Admin</h1>
+                    <input type="search" id="search-box" placeholder="Search cams..." oninput="filterCams()" style="margin-bottom:15px;background:#1a2a3a;border:1px solid #4a9eff;" />
                     <div class="cam-list">
                         <h2>Cams (${cams.length})</h2>
                         ${cams.map(cam => `
@@ -333,6 +334,16 @@ ADMIN_HTML = """
                 body: JSON.stringify(cam)
             }).then(r => r.json()).then(d => {
                 if (d.ok) { loadCams(); }
+            });
+        }
+
+           function filterCams() {
+               const query = document.getElementById('search-box').value.toLowerCase();
+               const items = document.querySelectorAll('.cam-item');
+               items.forEach(item => {
+                   const name = item.querySelector('.cam-name').textContent.toLowerCase();
+                   const location = item.querySelector('.cam-location').textContent.toLowerCase();
+                   item.style.display = (name.includes(query) || location.includes(query)) ? 'flex' : 'none';
             });
         }
 
