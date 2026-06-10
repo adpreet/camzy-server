@@ -94,12 +94,12 @@ ADMIN_HTML = """
 <html>
 <head>
     <title>Camzy Admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: pointer; }
-        body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; -webkit-overflow-scrolling: touch; }
-        .page{padding:20px;min-height:100vh;min-height:100dvh;}
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body { font-family: Arial, sans-serif; background: #0d1b2a; color: white; }
+        .page { padding: 20px; padding-bottom: 40px; }
         h1 { color: #4a9eff; margin-bottom: 20px; }
         h2 { color: #4a9eff; margin-bottom: 15px; }
         .cam-list { margin-bottom: 30px; }
@@ -107,22 +107,18 @@ ADMIN_HTML = """
         .cam-name { font-weight: bold; }
         .cam-location { color: #4a9eff; font-size: 12px; }
         .cam-category { color: #888; font-size: 12px; }
-        .delete-btn { background: #ff4444; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        .edit-btn { background: #4a9eff; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-
-        button {
-            touch-action: manipulation;
-        }
-
+        .delete-btn { background: #ff4444; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; touch-action: manipulation; }
+        .edit-btn { background: #4a9eff; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; touch-action: manipulation; }
         .add-form { background: #1a2a3a; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-size: 14px; color: #aaa; }
         input, select { width: 100%; padding: 10px; background: #0d1b2a; border: 1px solid #333; color: white; border-radius: 4px; font-size: 16px; }
         input::placeholder { color: #555; }
-        .btn { border: none; color: white; padding: 14px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 8px; }
+        .btn { border: none; color: white; padding: 14px; border-radius: 4px; cursor: pointer; touch-action: manipulation; width: 100%; font-size: 16px; margin-top: 8px; display: block; }
         .btn-blue { background: #4a9eff; }
         .btn-grey { background: #555; }
-        .btn-back { background: #1a2a3a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; width: auto; padding: 10px 16px; }
+        .btn-back { background: #1a2a3a; margin-bottom: 15px; width: auto; padding: 10px 16px; display: inline-block; }
+        .action-btns { background: #0d1b2a; padding: 10px 0; margin-bottom: 15px; }
         .login-form { max-width: 300px; margin: 100px auto; background: #1a2a3a; padding: 30px; border-radius: 8px; }
         .msg { padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; }
         .error { background: #4a1a1a; color: #ff4a4a; }
@@ -201,40 +197,32 @@ ADMIN_HTML = """
                             </div>
                         `).join('')}
                     </div>
-                    <div class="add-form">
-                        <button class="btn btn-blue" onclick="showAdd()">+ Add New Cam</button>
-                    </div>
+                    <button class="btn btn-blue" onclick="showAdd()">+ Add New Cam</button>
                 </div>`;
+            window.scrollTo(0, 0);
         }
 
-      function showEdit(id) {
+        function showEdit(id) {
             editingId = id;
             view = 'edit';
             render();
             window.scrollTo(0, 0);
-            requestAnimationFrame(() => {
-                document.body.style.transform = 'scale(1)';
-                document.body.offsetHeight;
-                document.body.style.transform = '';
-            });
         }
 
         function showAdd() {
             view = 'add';
             render();
             window.scrollTo(0, 0);
-            requestAnimationFrame(() => {
-                document.body.style.transform = 'scale(1)';
-                document.body.offsetHeight;
-                document.body.style.transform = '';
-            });
         }
 
         function renderEdit() {
             const cam = cams.find(c => c.id === editingId);
             document.getElementById('app').innerHTML = `
                 <div class="page">
-                    <button class="btn btn-back" onclick="backToList()">Back</button>
+                    <div class="action-btns">
+                        <button class="btn btn-blue" onclick="saveCam()">Save</button>
+                        <button class="btn btn-grey" onclick="backToList()">Cancel</button>
+                    </div>
                     <h2>Edit Cam</h2>
                     <div class="add-form">
                         <div class="form-group"><label>Name</label><input id="e-name" value="${cam.name}" /></div>
@@ -255,17 +243,17 @@ ADMIN_HTML = """
                         </div>
                         <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" value="${cam.thumbnailOverride || ''}" /></div>
                     </div>
-                    <div class="sticky-buttons">
-                        <button class="btn btn-blue" onclick="saveCam()">Save</button>
-                        <button class="btn btn-grey" onclick="backToList()">Cancel</button>
-                    </div>
                 </div>`;
+            window.scrollTo(0, 0);
         }
 
         function renderAdd() {
             document.getElementById('app').innerHTML = `
                 <div class="page">
-                    <button class="btn btn-back" onclick="backToList()">Back</button>
+                    <div class="action-btns">
+                        <button class="btn btn-blue" onclick="addCam()">Add Cam</button>
+                        <button class="btn btn-grey" onclick="backToList()">Cancel</button>
+                    </div>
                     <h2>Add New Cam</h2>
                     <div class="add-form">
                         <div class="form-group"><label>Name</label><input id="f-name" placeholder="Enter cam name" /></div>
@@ -284,13 +272,10 @@ ADMIN_HTML = """
                                 <option>Asia Pacific</option>
                             </select>
                         </div>
-                    <div class="form-group"><label>Thumbnail URL (optional)</label><input id="e-thumbnail" value="${cam.thumbnailOverride || ''}" /></div>
-                    </div>
-                    <div class="sticky-buttons">
-                        <button class="btn btn-blue" onclick="saveCam()">Save</button>
-                        <button class="btn btn-grey" onclick="backToList()">Cancel</button>
+                        <div class="form-group"><label>Thumbnail URL (optional)</label><input id="f-thumbnail" placeholder="https://..." /></div>
                     </div>
                 </div>`;
+            window.scrollTo(0, 0);
         }
 
         function backToList() {
