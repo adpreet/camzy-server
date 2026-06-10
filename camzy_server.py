@@ -207,12 +207,14 @@ ADMIN_HTML = """
             view = 'edit';
             render();
             window.scrollTo(0, 0);
+            setTimeout(() => window.scrollBy(0, 1), 0);
         }
 
         function showAdd() {
             view = 'add';
             render();
             window.scrollTo(0, 0);
+            setTimeout(() => window.scrollBy(0, 1), 0);
         }
 
         function renderEdit() {
