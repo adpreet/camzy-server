@@ -3,7 +3,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import json, os, time
 
 cache = {}
-CACHE_DURATION = 3600
+CACHE_DURATION = 21600
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "camzy123")
 CAMS_FILE = "cams.json"
